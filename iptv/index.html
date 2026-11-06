@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b0f19">
+<title>IPTV Player · تسجيل من الجوال</title>
+<style>
+  :root {
+    --bg: #0b0f19; --card: #141c2d; --line: rgba(255,255,255,0.08); --text: #f2f5fa; --muted: #8c97ad;
+    --accent: #ffb020; --accent-2: #ff6a3d; --ink: #1b1200; --ok: #43c463; --err: #ff7b72;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(circle at 90% -10%, #1d2a4a 0%, rgba(11,15,25,0) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Arabic", "Segoe UI", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+  }
+  .wrap { max-width: 440px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 14px; margin: 8px 0 22px; }
+  .logo {
+    width: 52px; height: 52px; border-radius: 16px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--ink);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 26px rgba(255,140,0,0.28);
+  }
+  .logo svg { width: 28px; height: 28px; fill: currentColor; }
+  h1 { font-size: 22px; margin: 0; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px 18px; }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+  .field { margin-bottom: 16px; }
+  .input {
+    position: relative; display: flex; align-items: center;
+    background: rgba(255,255,255,0.05); border: 2px solid transparent; border-radius: 14px;
+  }
+  .input:focus-within { border-color: var(--accent); background: rgba(255,176,32,0.07); }
+  input {
+    flex: 1; min-width: 0; width: 100%; height: 52px; padding: 0 14px; border: 0; outline: none; background: transparent;
+    color: var(--text); font-size: 17px; font-family: inherit; direction: ltr; text-align: left;
+  }
+  input::placeholder { color: #5f6b85; }
+  .eye {
+    width: 48px; height: 48px; border: 0; background: transparent; color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .eye svg { width: 22px; height: 22px; fill: currentColor; }
+  .tip { font-size: 13px; color: var(--muted); line-height: 1.6; margin: -6px 0 16px; }
+  button.send {
+    width: 100%; height: 56px; border: 0; border-radius: 16px; cursor: pointer;
+    background: var(--accent); color: var(--ink); font-size: 18px; font-weight: 800; font-family: inherit;
+    box-shadow: 0 10px 26px rgba(255,160,0,0.3);
+  }
+  button.send:disabled { opacity: 0.6; cursor: default; }
+  .msg { min-height: 22px; margin: 14px 0 0; font-size: 15px; text-align: center; color: var(--err); }
+  .done { text-align: center; padding: 26px 10px 10px; }
+  .done .check {
+    width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 16px; background: rgba(67,196,99,0.15); color: var(--ok);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .done .check svg { width: 40px; height: 40px; fill: currentColor; }
+  .done h2 { margin: 0 0 8px; font-size: 22px; }
+  .done p { margin: 0 0 20px; color: var(--muted); line-height: 1.7; }
+  .link-btn { background: none; border: 0; color: var(--accent); font-size: 15px; font-family: inherit; cursor: pointer; padding: 8px; }
+  .safe { display: flex; gap: 8px; align-items: flex-start; margin-top: 16px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+  .safe svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; fill: #6f7b94; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M4 18.5V5.5h3.7L12 13.3l4.3-7.8H20v13h-3.7v-5.34L12 20.96l-4.3-7.8v5.34z" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round"/></svg></div>
+    <div>
+      <h1>IPTV Player</h1>
+      <p>إرسال بيانات الاشتراك إلى الشاشة</p>
+    </div>
+  </header>
+
+  <!-- opened without the TV's code -->
+  <div class="card hidden" id="no-session">
+    <div class="done">
+      <div class="check" style="background:rgba(255,123,114,0.12);color:var(--err)"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+      <h2>افتح الصفحة من الشاشة</h2>
+      <p>شغّل تطبيق IPTV Player على التلفزيون، وامسح رمز QR الظاهر في شاشة تسجيل الدخول بكاميرا الجوال.</p>
+    </div>
+  </div>
+
+  <!-- form -->
+  <form class="card hidden" id="form" autocomplete="off" novalidate>
+    <div class="field">
+      <label for="server">رابط السيرفر</label>
+      <div class="input"><input id="server" type="url" inputmode="url" placeholder="http://example.com:8080" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+    </div>
+    <p class="tip">يمكنك لصق رابط M3U كامل هنا، وسيتم استخراج اسم المستخدم وكلمة المرور منه تلقائياً.</p>
+    <div class="field">
+      <label for="user">اسم المستخدم</label>
+      <div class="input"><input id="user" type="text" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+    </div>
+    <div class="field">
+      <label for="pass">كلمة المرور</label>
+      <div class="input">
+        <input id="pass" type="password" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="button" class="eye" id="eye" aria-label="إظهار كلمة المرور"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/></svg></button>
+      </div>
+    </div>
+    <button type="submit" class="send" id="send">إرسال إلى الشاشة</button>
+    <p class="msg" id="msg"></p>
+    <div class="safe">
+      <svg viewBox="0 0 24 24"><path d="M18 8h-1V6A5 5 0 007 6v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2zM9 6a3 3 0 016 0v2H9V6zm9 14H6V10h12v10z"/></svg>
+      <span>تُشفَّر البيانات على جوالك قبل الإرسال، ومفتاح فك التشفير موجود فقط في الرمز الظاهر على الشاشة. هذه الصفحة لا تحفظ أي بيانات.</span>
+    </div>
+  </form>
+
+  <!-- sent -->
+  <div class="card hidden" id="sent">
+    <div class="done">
+      <div class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <h2>تم الإرسال</h2>
+      <p>سيتم تسجيل الدخول على الشاشة خلال ثوانٍ.<br>إذا كانت البيانات غير صحيحة، عدّلها وأرسلها مرة أخرى.</p>
+      <button type="button" class="link-btn" id="again">تعديل البيانات وإرسالها مرة أخرى</button>
+    </div>
+  </div>
+</div>
+
+<script src="crypto.js"></script>
+<script>
+(function () {
+  var o = window.IPTV_CONFIG || {};
+  var RELAY = o.relay || 'https://ntfy.sh';
+
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    ['no-session', 'form', 'sent'].forEach(function (x) { $(x).classList.toggle('hidden', x !== id); });
+  }
+
+  /* read #t=<channel>&k=<key> — the hash never reaches any server */
+  var params = {};
+  location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+    var i = kv.indexOf('=');
+    if (i > 0) params[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1));
+  });
+  var topic = params.t, key = null;
+  try { if (params.k) key = PairCrypto.b64urlDecode(params.k); } catch (e) { key = null; }
+  if (!topic || !/^[A-Za-z0-9_-]{8,64}$/.test(topic) || !key || key.length !== 16) { show('no-session'); return; }
+  /* remove the key from the address bar and history */
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  show('form');
+
+  function trim(s) { return String(s || '').replace(/^\s+|\s+$/g, ''); }
+
+  /* "http://host:port/get.php?username=u&password=p&type=m3u" -> parts */
+  function parseServer(input) {
+    var s = trim(input), out = { server: '', username: '', password: '' };
+    if (!s) return out;
+    if (!/^https?:\/\//i.test(s)) s = 'http://' + s;
+    var m = s.match(/[?&]username=([^&#]+)/i); if (m) out.username = decodeURIComponent(m[1]);
+    m = s.match(/[?&]password=([^&#]+)/i); if (m) out.password = decodeURIComponent(m[1]);
+    var o2 = s.match(/^(https?:\/\/[^\/?#]+)(\/[^?#]*)?/i);
+    if (o2) out.server = o2[1] + (o2[2] || '').replace(/\/(get|player_api|panel_api|xmltv)\.php$/i, '').replace(/\/+$/, '');
+    return out;
+  }
+
+  function fillFromLink() {
+    var p = parseServer($('server').value);
+    if (p.username) {
+      $('server').value = p.server;
+      $('user').value = p.username;
+      if (p.password) $('pass').value = p.password;
+      $('msg').style.color = 'var(--ok)';
+      $('msg').textContent = 'تم استخراج البيانات من الرابط ✓';
+    }
+  }
+  $('server').addEventListener('change', fillFromLink);
+  $('server').addEventListener('paste', function () { setTimeout(fillFromLink, 0); });
+
+  $('eye').addEventListener('click', function () {
+    var p = $('pass');
+    p.type = p.type === 'password' ? 'text' : 'password';
+  });
+
+  $('again').addEventListener('click', function () { show('form'); $('msg').textContent = ''; });
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    fillFromLink();
+    var msg = $('msg');
+    msg.style.color = 'var(--err)';
+    var p = parseServer($('server').value);
+    var user = trim($('user').value), pass = trim($('pass').value);
+    if (!p.server) { msg.textContent = 'اكتب رابط السيرفر'; $('server').focus(); return; }
+    if (!user) { msg.textContent = 'اكتب اسم المستخدم'; $('user').focus(); return; }
+    if (!pass) { msg.textContent = 'اكتب كلمة المرور'; $('pass').focus(); return; }
+    msg.textContent = '';
+
+    var wire = PairCrypto.seal(key, JSON.stringify({ s: p.server, u: user, p: pass }));
+    var btn = $('send');
+    btn.disabled = true;
+    btn.textContent = 'جاري الإرسال...';
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', RELAY + '/' + topic, true);
+    xhr.setRequestHeader('Content-Type', 'text/plain');
+    xhr.timeout = 20000;
+    function done(ok) {
+      btn.disabled = false;
+      btn.textContent = 'إرسال إلى الشاشة';
+      if (ok) show('sent');
+      else msg.textContent = 'تعذّر الإرسال، تأكد من الإنترنت وحاول مرة أخرى';
+    }
+    xhr.onload = function () { done(xhr.status >= 200 && xhr.status < 300); };
+    xhr.onerror = function () { done(false); };
+    xhr.ontimeout = function () { done(false); };
+    xhr.send(wire);
+  });
+})();
+</script>
+</body>
+</html>
