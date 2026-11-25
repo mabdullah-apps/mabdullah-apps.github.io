@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#120D17">
+<title>كنبة · إضافة قائمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #120D17; --card: #1C1522; --line: rgba(255,255,255,0.08); --text: #F7F1F4; --muted: #B3A6B5;
+    --field: #261D2D; --accent: #F2455A; --ok: #5BD08A; --err: #FF8A80;
+    --grad: linear-gradient(135deg, #FF8A4C, #F2455A 48%, #C10A50);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "Readex Pro", -apple-system, "SF Arabic", "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+  }
+  .wrap { max-width: 440px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 14px; margin: 8px 0 22px; }
+  .logo { width: 52px; height: 52px; flex-shrink: 0; }
+  h1 { font-size: 22px; margin: 0; font-weight: 700; }
+  header p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px 18px; }
+  .tabs { display: flex; gap: 6px; padding: 5px; margin-bottom: 18px; border-radius: 14px; background: var(--field); }
+  .tabs button {
+    flex: 1; height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted);
+    font: 600 15px/1 inherit; font-family: inherit; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { background: var(--text); color: #1A1220; }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+  .field { margin-bottom: 16px; }
+  .input { position: relative; display: flex; align-items: center; background: var(--field); border: 2px solid transparent; border-radius: 14px; }
+  .input:focus-within { border-color: var(--accent); }
+  input {
+    flex: 1; min-width: 0; width: 100%; height: 52px; padding: 0 14px; border: 0; outline: none; background: transparent;
+    color: var(--text); font-size: 17px; font-family: inherit; direction: ltr; text-align: left;
+  }
+  input::placeholder { color: #7E7280; }
+  .eye { width: 48px; height: 48px; border: 0; background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .eye svg { width: 22px; height: 22px; fill: currentColor; }
+  .tip { font-size: 13px; color: var(--muted); line-height: 1.6; margin: -6px 0 16px; }
+  button.send {
+    width: 100%; height: 56px; border: 0; border-radius: 16px; cursor: pointer; background: var(--grad); color: #fff;
+    font-size: 18px; font-weight: 700; font-family: inherit; box-shadow: 0 10px 26px rgba(242,69,90,0.3);
+  }
+  button.send:disabled { opacity: 0.6; cursor: default; }
+  .msg { min-height: 22px; margin: 14px 0 0; font-size: 15px; text-align: center; color: var(--err); }
+  .done { text-align: center; padding: 26px 10px 10px; }
+  .done .check { width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 16px; background: rgba(91,208,138,0.15); color: var(--ok); display: flex; align-items: center; justify-content: center; }
+  .done .check.bad { background: rgba(255,138,128,0.12); color: var(--err); }
+  .done .check svg { width: 40px; height: 40px; fill: currentColor; }
+  .done h2 { margin: 0 0 8px; font-size: 22px; }
+  .done p { margin: 0 0 20px; color: var(--muted); line-height: 1.7; }
+  .link-btn { background: none; border: 0; color: #FF8A7A; font-size: 15px; font-family: inherit; cursor: pointer; padding: 8px; }
+  .safe { display: flex; gap: 8px; align-items: flex-start; margin-top: 16px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+  .safe svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; fill: #8E8191; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg class="logo" viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A4C"/><stop offset="0.48" stop-color="#F2455A"/><stop offset="1" stop-color="#C10A50"/></linearGradient></defs><rect width="512" height="512" rx="116" fill="url(#g)"/><g transform="translate(104 126.8) scale(0.95)" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><path d="M122 178H96C78 178 66 168 66 150V104C66 66 90 40 124 40H196C230 40 254 66 254 104V150C254 168 242 178 224 178H198"/><path d="M66 112C66 96 54 86 40 86C24 86 14 98 16 114L26 190C28 204 38 212 52 212H268C282 212 292 204 294 190L304 114C306 98 296 86 280 86C266 86 254 96 254 112"/><path d="M60 214V234M260 214V234"/><path d="M140 84V152L196 118Z"/></g></svg>
+    <div>
+      <h1 data-t="name">كنبة</h1>
+      <p data-t="sub">إضافة قائمة تشغيل إلى الشاشة</p>
+    </div>
+  </header>
+
+  <!-- opened without the TV's code -->
+  <div class="card hidden" id="no-session">
+    <div class="done">
+      <div class="check bad"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+      <h2 data-t="noTitle">افتح الصفحة من الشاشة</h2>
+      <p data-t="noText">شغّل تطبيق كنبة على التلفزيون، وامسح الرمز الظاهر في شاشة إضافة القائمة بكاميرا الجوال.</p>
+    </div>
+  </div>
+
+  <!-- form -->
+  <form class="card hidden" id="form" autocomplete="off" novalidate>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-x" aria-selected="true">Xtream Codes</button>
+      <button type="button" role="tab" id="tab-m" aria-selected="false" data-t="tabM3u">رابط M3U</button>
+    </div>
+
+    <div id="x-part">
+      <div class="field">
+        <label for="server" data-t="server">رابط السيرفر</label>
+        <div class="input"><input id="server" type="url" inputmode="url" placeholder="http://example.com:8080" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      </div>
+      <p class="tip" data-t="serverTip">يمكنك لصق رابط Xtream كامل هنا، وسيتم استخراج اسم المستخدم وكلمة المرور منه تلقائياً.</p>
+      <div class="field">
+        <label for="user" data-t="user">اسم المستخدم</label>
+        <div class="input"><input id="user" type="text" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <label for="pass" data-t="pass">كلمة المرور</label>
+        <div class="input">
+          <input id="pass" type="password" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <button type="button" class="eye" id="eye" aria-label="show"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17a5 5 0 110-10 5 5 0 010 10zm0-8a3 3 0 100 6 3 3 0 000-6z"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="m-part" class="hidden">
+      <div class="field">
+        <label for="m3u" data-t="m3u">رابط قائمة M3U</label>
+        <div class="input"><input id="m3u" type="url" inputmode="url" placeholder="http://example.com/list.m3u" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <label for="epg" data-t="epg">رابط دليل البرامج XMLTV (اختياري)</label>
+        <div class="input"><input id="epg" type="url" inputmode="url" placeholder="http://example.com/guide.xml" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      </div>
+      <p class="tip" data-t="epgTip">إذا كانت القائمة تحتوي على رابط دليل البرامج، اتركه فارغاً.</p>
+    </div>
+
+    <button type="submit" class="send" id="send" data-t="send">إرسال إلى الشاشة</button>
+    <p class="msg" id="msg"></p>
+    <div class="safe">
+      <svg viewBox="0 0 24 24"><path d="M18 8h-1V6A5 5 0 007 6v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2zM9 6a3 3 0 016 0v2H9V6zm9 14H6V10h12v10z"/></svg>
+      <span data-t="safe">تُشفَّر البيانات على جوالك قبل الإرسال، ومفتاح فك التشفير موجود فقط في الرمز الظاهر على الشاشة. هذه الصفحة لا تحفظ أي بيانات.</span>
+    </div>
+  </form>
+
+  <!-- sent -->
+  <div class="card hidden" id="sent">
+    <div class="done">
+      <div class="check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <h2 data-t="sentTitle">تم الإرسال</h2>
+      <p data-t="sentText">ستظهر القائمة على الشاشة خلال ثوانٍ. إذا كانت البيانات غير صحيحة، عدّلها وأرسلها مرة أخرى.</p>
+      <button type="button" class="link-btn" id="again" data-t="again">تعديل البيانات وإرسالها مرة أخرى</button>
+    </div>
+  </div>
+</div>
+
+<script src="crypto.js"></script>
+<script>
+(function () {
+  var RELAY = 'https://ntfy.sh';
+
+  /* the phone's language: Arabic, else English */
+  var EN = {
+    name: 'Kanaba', sub: 'Add a playlist to your screen',
+    noTitle: 'Open this page from your TV', noText: 'Start Kanaba on your TV and scan the code on the "add playlist" screen with your phone camera.',
+    tabM3u: 'M3U link', server: 'Server URL', serverTip: 'You can paste a full Xtream link here; the username and password are filled in for you.',
+    user: 'Username', pass: 'Password', m3u: 'M3U playlist link', epg: 'XMLTV guide link (optional)',
+    epgTip: 'Leave it empty if the playlist already includes its guide.', send: 'Send to the screen',
+    safe: 'Your details are encrypted on your phone before they are sent, and only the code on your screen can open them. This page keeps nothing.',
+    sentTitle: 'Sent', sentText: 'The playlist appears on your screen in a few seconds. If something was wrong, edit it and send it again.',
+    again: 'Edit and send again',
+    eServer: 'Enter the server URL', eUser: 'Enter the username', ePass: 'Enter the password', eM3u: 'Enter the playlist link',
+    sending: 'Sending…', failed: 'Could not send. Check your internet and try again.', filled: 'Details taken from the link ✓'
+  };
+  var AR = {
+    eServer: 'اكتب رابط السيرفر', eUser: 'اكتب اسم المستخدم', ePass: 'اكتب كلمة المرور', eM3u: 'اكتب رابط القائمة',
+    sending: 'جاري الإرسال...', failed: 'تعذّر الإرسال، تأكد من الإنترنت وحاول مرة أخرى', filled: 'تم استخراج البيانات من الرابط ✓',
+    send: 'إرسال إلى الشاشة'
+  };
+  var en = !/^ar/i.test(navigator.language || '');
+  var T = en ? EN : AR;
+  if (en) {
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.title = 'Kanaba · Add a playlist';
+    var els = document.querySelectorAll('[data-t]');
+    for (var i = 0; i < els.length; i++) { var k = els[i].getAttribute('data-t'); if (EN[k]) els[i].textContent = EN[k]; }
+  }
+
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    ['no-session', 'form', 'sent'].forEach(function (x) { $(x).classList.toggle('hidden', x !== id); });
+  }
+
+  /* read #t=<channel>&k=<key> — the part after # never reaches any server */
+  var params = {};
+  location.hash.replace(/^#/, '').split('&').forEach(function (kv) {
+    var j = kv.indexOf('=');
+    if (j > 0) params[kv.slice(0, j)] = decodeURIComponent(kv.slice(j + 1));
+  });
+  var topic = params.t, key = null;
+  try { if (params.k) key = PairCrypto.b64urlDecode(params.k); } catch (e) { key = null; }
+  if (!topic || !/^[A-Za-z0-9_-]{8,64}$/.test(topic) || !key || key.length !== 16) { show('no-session'); return; }
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  show('form');
+
+  var mode = 'x';
+  function setMode(m) {
+    mode = m;
+    $('tab-x').setAttribute('aria-selected', m === 'x' ? 'true' : 'false');
+    $('tab-m').setAttribute('aria-selected', m === 'm' ? 'true' : 'false');
+    $('x-part').classList.toggle('hidden', m !== 'x');
+    $('m-part').classList.toggle('hidden', m !== 'm');
+    $('msg').textContent = '';
+  }
+  $('tab-x').addEventListener('click', function () { setMode('x'); });
+  $('tab-m').addEventListener('click', function () { setMode('m'); });
+
+  function trim(s) { return String(s || '').replace(/^\s+|\s+$/g, ''); }
+  function withScheme(s) { s = trim(s); return s && !/^https?:\/\//i.test(s) ? 'http://' + s : s; }
+
+  /* "http://host:port/get.php?username=u&password=p&type=m3u" -> parts */
+  function parseServer(input) {
+    var s = withScheme(input), out = { server: '', username: '', password: '' };
+    if (!s) return out;
+    var m = s.match(/[?&]username=([^&#]+)/i); if (m) out.username = decodeURIComponent(m[1]);
+    m = s.match(/[?&]password=([^&#]+)/i); if (m) out.password = decodeURIComponent(m[1]);
+    var o2 = s.match(/^(https?:\/\/[^\/?#]+)(\/[^?#]*)?/i);
+    if (o2) out.server = o2[1] + (o2[2] || '').replace(/\/(get|player_api|panel_api|xmltv)\.php$/i, '').replace(/\/+$/, '');
+    return out;
+  }
+
+  function fillFromLink() {
+    var p = parseServer($('server').value);
+    if (p.username) {
+      $('server').value = p.server;
+      $('user').value = p.username;
+      if (p.password) $('pass').value = p.password;
+      $('msg').style.color = 'var(--ok)';
+      $('msg').textContent = T.filled;
+    }
+  }
+  $('server').addEventListener('change', fillFromLink);
+  $('server').addEventListener('paste', function () { setTimeout(fillFromLink, 0); });
+  $('eye').addEventListener('click', function () { var p = $('pass'); p.type = p.type === 'password' ? 'text' : 'password'; });
+  $('again').addEventListener('click', function () { show('form'); $('msg').textContent = ''; });
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var msg = $('msg'), payload;
+    if (mode === 'x') {
+      fillFromLink();
+      msg.style.color = 'var(--err)';
+      var p = parseServer($('server').value);
+      var user = trim($('user').value), pass = trim($('pass').value);
+      if (!p.server) { msg.textContent = T.eServer; $('server').focus(); return; }
+      if (!user) { msg.textContent = T.eUser; $('user').focus(); return; }
+      if (!pass) { msg.textContent = T.ePass; $('pass').focus(); return; }
+      payload = { s: p.server, u: user, p: pass };
+    } else {
+      msg.style.color = 'var(--err)';
+      var link = withScheme($('m3u').value);
+      if (!link) { msg.textContent = T.eM3u; $('m3u').focus(); return; }
+      payload = { k: 'm3u', l: link, e: withScheme($('epg').value) };
+    }
+    msg.textContent = '';
+
+    var wire = PairCrypto.seal(key, JSON.stringify(payload));
+    var btn = $('send');
+    btn.disabled = true;
+    btn.textContent = T.sending;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', RELAY + '/' + topic, true);
+    xhr.setRequestHeader('Content-Type', 'text/plain');
+    xhr.timeout = 20000;
+    function done(ok) {
+      btn.disabled = false;
+      btn.textContent = T.send;
+      if (ok) show('sent');
+      else msg.textContent = T.failed;
+    }
+    xhr.onload = function () { done(xhr.status >= 200 && xhr.status < 300); };
+    xhr.onerror = function () { done(false); };
+    xhr.ontimeout = function () { done(false); };
+    xhr.send(wire);
+  });
+})();
+</script>
+</body>
+</html>
