@@ -203,8 +203,13 @@
   $('tab-x').addEventListener('click', function () { setMode('x'); });
   $('tab-m').addEventListener('click', function () { setMode('m'); });
 
-  function trim(s) { return String(s || '').replace(/^\s+|\s+$/g, ''); }
-  function withScheme(s) { s = trim(s); return s && !/^https?:\/\//i.test(s) ? 'http://' + s : s; }
+  /* WhatsApp and other apps add invisible direction marks when copying: they never reach the TV */
+  function clean(s) { return String(s || '').replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF\u00A0]/g, ' '); }
+  function trim(s) { return clean(s).replace(/^\s+|\s+$/g, ''); }
+  /* a user name or password: the first run of plain characters (no spaces, no Arabic labels) */
+  function token(s) { var m = trim(s).match(/[\x21-\x25\x27-\x7E]+/); return m ? m[0] : ''; }
+  function firstLink(s) { var m = clean(s).match(/https?:\/\/[^\s"'<>]+/i); return m ? m[0] : trim(s).split(/\s+/)[0]; }
+  function withScheme(s) { s = firstLink(s); return s && !/^https?:\/\//i.test(s) ? 'http://' + s : s; }
 
   /* "http://host:port/get.php?username=u&password=p&type=m3u" -> parts */
   function parseServer(input) {
@@ -228,7 +233,42 @@
     }
   }
   $('server').addEventListener('change', fillFromLink);
-  $('server').addEventListener('paste', function () { setTimeout(fillFromLink, 0); });
+
+  /* pasting: a whole message (link + user name + password) fills every box at once;
+     a single value goes into its box without the extra words around it */
+  var LABEL_USER = /(?:user\s*name|username|user|اسم المستخدم|المستخدم|اليوزر|يوزر)\s*[:：=\-]?\s*([\x21-\x25\x27-\x7E]+)/i;
+  var LABEL_PASS = /(?:pass\s*word|password|pass|كلمة المرور|كلمة السر|الباسورد|باسورد|الرقم السري)\s*[:：=\-]?\s*([\x21-\x25\x27-\x7E]+)/i;
+  function smartPaste(text, box) {
+    var t = clean(text), filled = {};
+    var url = t.match(/https?:\/\/[^\s"'<>]+/i);
+    if (url) {
+      var p = parseServer(url[0]);
+      if (p.server) { $('server').value = p.server; filled.server = 1; }
+      if (p.username) { $('user').value = p.username; filled.user = 1; }
+      if (p.password) { $('pass').value = p.password; filled.pass = 1; }
+    }
+    var u = LABEL_USER.exec(t), pw = LABEL_PASS.exec(t);
+    if (u && !filled.user) { $('user').value = u[1]; filled.user = 1; }
+    if (pw && !filled.pass) { $('pass').value = pw[1]; filled.pass = 1; }
+    if (!filled[box.id]) box.value = box.id === 'server' ? firstLink(t) : token(t);
+    if (filled.user && filled.pass) { $('msg').style.color = 'var(--ok)'; $('msg').textContent = T.filled; }
+  }
+  ['server', 'user', 'pass'].forEach(function (id) {
+    $(id).addEventListener('paste', function (e) {
+      var cd = e.clipboardData || window.clipboardData, text = cd && cd.getData('text');
+      if (!text) return;
+      e.preventDefault();
+      smartPaste(text, this);
+    });
+  });
+  ['m3u', 'epg'].forEach(function (id) {
+    $(id).addEventListener('paste', function (e) {
+      var cd = e.clipboardData || window.clipboardData, text = cd && cd.getData('text');
+      if (!text) return;
+      e.preventDefault();
+      this.value = firstLink(text);
+    });
+  });
   $('eye').addEventListener('click', function () { var p = $('pass'); p.type = p.type === 'password' ? 'text' : 'password'; });
   $('again').addEventListener('click', function () { show('form'); $('msg').textContent = ''; });
 
@@ -239,7 +279,8 @@
       fillFromLink();
       msg.style.color = 'var(--err)';
       var p = parseServer($('server').value);
-      var user = trim($('user').value), pass = trim($('pass').value);
+      var user = token($('user').value), pass = token($('pass').value);
+      $('user').value = user; $('pass').value = pass;
       if (!p.server) { msg.textContent = T.eServer; $('server').focus(); return; }
       if (!user) { msg.textContent = T.eUser; $('user').focus(); return; }
       if (!pass) { msg.textContent = T.ePass; $('pass').focus(); return; }
